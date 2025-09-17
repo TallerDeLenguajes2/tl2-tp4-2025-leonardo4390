@@ -25,11 +25,9 @@ public class Cadeteria
         Pedidos = new List<Pedido>();
     }
 
-    // Información general
     public string ObtenerNombre() => nombre;
     public string ObtenerTelefono() => telefono;
 
-    // 📦 Gestión de pedidos
     public void CrearPedido(int nro, string obs, string nombreCliente, string direccion, string telefono, string referencia, List<Producto> productos)
     {
         var cliente = new Cliente(nombreCliente, direccion, telefono, referencia);
@@ -61,7 +59,6 @@ public class Cadeteria
         return false;
     }
 
-    // 📊 Informes
     public List<string> ObtenerInforme()
     {
         var informe = new List<string> { $"Informe de actividad - {nombre}" };
@@ -86,8 +83,6 @@ public class Cadeteria
             .Where(p => p.CadeteAsignado?.Id == idCadete && p.EstaEntregado())
             .Count() * 500;
     }
-
-    // 📋 Listados
     public List<string> ListarPedidos()
     {
         return Pedidos.Select(p =>
@@ -102,7 +97,6 @@ public class Cadeteria
         ).ToList();
     }
 
-    // 🔎 Acceso directo
     public Pedido ObtenerPedidoPorNumero(int nro)
     {
         return Pedidos.FirstOrDefault(p => p.Nro == nro);
