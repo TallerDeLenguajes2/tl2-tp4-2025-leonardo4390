@@ -1,28 +1,27 @@
 using System;
+using System.Text.Json;
 public class Cadeteria
 {
     private string nombre;
     private string telefono;
+    private AccesoADatosPedidos accesoPedidos;
+
     public List<Cadete> Cadetes { get; private set; }
     public List<Pedido> Pedidos { get; private set; }
-
-    public Cadeteria(IAccesoADatos acceso, string rutaCadeteria, string rutaCadetes)
+    
+    public Cadeteria(
+        AccesoADatosCadeteria accesoCadeteria,
+        AccesoADatosCadetes accesoCadetes,
+        AccesoADatosPedidos accesoPedidos)
     {
-        var datosCadeteria = acceso.LeerCadeteria(rutaCadeteria);
-        nombre = datosCadeteria[0];
-        telefono = datosCadeteria[1];
+        var baseCadeteria = accesoCadeteria.Obtener();
+        nombre = baseCadeteria.ObtenerNombre();
+        telefono = baseCadeteria.ObtenerTelefono();
 
-        Cadetes = new List<Cadete>();
-        var datosCadetes = acceso.LeerCadetes(rutaCadetes);
-        int contador = 1;
+        Cadetes = accesoCadetes.Obtener();
+        Pedidos = accesoPedidos.Obtener();
 
-        foreach (var fila in datosCadetes)
-        {
-            Cadetes.Add(new Cadete(fila[0], fila[1], fila[2]));
-            contador++;
-        }
-
-        Pedidos = new List<Pedido>();
+        this.accesoPedidos = accesoPedidos;
     }
 
     public string ObtenerNombre() => nombre;
@@ -34,7 +33,9 @@ public class Cadeteria
         var pedido = new Pedido(nro, obs, cliente, "Pendiente");
         foreach (var p in productos) pedido.AgregarProducto(p);
         Pedidos.Add(pedido);
+        accesoPedidos.Guardar(Pedidos);
     }
+
 
     public bool AsignarCadeteAPedido(int idCadete, int nroPedido)
     {
